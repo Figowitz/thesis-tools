@@ -171,13 +171,13 @@ def units_to_si(vsm_data):
     columns = vsm_data.columns
     
     if 'Field(G)' in columns:
-        # Gauss to militesla
-        vsm_data['Field(G)'] = vsm_data['Field(G)']/10
+        # Gauss to Tesla
+        vsm_data['Field(G)'] = vsm_data['Field(G)']*1e-4
         vsm_data.rename(columns={'Field(G)':'B'}, inplace=True)
     
     if 'Moment(emu)' in columns:
         # emu to Am^2
-        vsm_data['Moment(emu)'] = vsm_data['Moment(emu)']*1000
+        vsm_data['Moment(emu)'] = vsm_data['Moment(emu)']*1e-3
         vsm_data.rename(columns={'Moment(emu)':'m'}, inplace=True)
         
     if 'Temperature(K)' in columns:
@@ -209,7 +209,7 @@ def load_directory(directory, si_units=True, **kwargs):
     See match_files() for keyword arguments, such as index values.
     Returns a list of pandas dataframes containing the VSM data
     
-    TODO: Ensure that all fields are renamed to short names (B, T, m etc) regardles of Si conversion
+    TODO: Ensure that all fields are renamed to short names (B, T, m etc) regardles of SI conversion
     """
     
     # Get current directory
