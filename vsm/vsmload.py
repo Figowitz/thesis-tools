@@ -89,7 +89,7 @@ def match_files(directory, extension='.txt', indexer='#', index_vals='all', incl
     # Get all files with an index, as well as their indices
     filenames = get_txt_files(directory, extension)
     filenames, indices = index_files(filenames, indexer)
-     
+    
     filenames_matched = []
     
     # If input is a tuple, make it into a list ranging from first to last index
@@ -97,7 +97,7 @@ def match_files(directory, extension='.txt', indexer='#', index_vals='all', incl
         index_min = index_vals[0]
         index_max = index_vals[1] + 1
         
-        index_vals = list(range(index_min, index_max))   
+        index_vals = list(range(index_min, index_max))
     
     
     # Match files of desired index or indices
@@ -180,9 +180,9 @@ def units_to_si(vsm_data):
         vsm_data['Moment(emu)'] = vsm_data['Moment(emu)']*1e-3
         vsm_data.rename(columns={'Moment(emu)':'m'}, inplace=True)
         
-    if 'Temperature(K)' in columns:
+    if 'Temperature(C)' in columns:
         # Kelvin to C
-        vsm_data['Temperature(K)'] = vsm_data['Temperature(K)']+273.15
+        #vsm_data['Temperature(K)'] = vsm_data['Temperature(K)']+273.15
         vsm_data.rename(columns={'Temperature(K)':'T'}, inplace=True)
     
     return vsm_data
@@ -203,7 +203,7 @@ def load_vsm_file(filepath):
     return data
 
 
-def load_directory(directory, si_units=True, **kwargs):
+def load_directory(directory, si_units=True, check_data=True, sample_mass_mg=1, **kwargs):
     """ 
     Loads VSM datafiles from directory (defaults to current working directory).
     See match_files() for keyword arguments, such as index values.
@@ -227,9 +227,19 @@ def load_directory(directory, si_units=True, **kwargs):
     print('Loading files:')
     for i, filename in enumerate(filenames):
         print(filename)
-        vsm_data[i] = load_vsm_file(filename)
+        
+        temp_data = load_vsm_file(filename)
         if si_units:
-            vsm_data[i] = units_to_si(vsm_data[i])
+            temp_data = units_to_si(temp_data)
+            
+        if check_data == True:
+            if temp_data.size > 500:
+                vsm_data[i] = temp_data
+            else:
+                vsm_data[i] = pd.DataFrame({'B':[0], 'm':[0], 'T':[0]})
+                print('Data too short to be valid, skipped')
+        else:
+            vsm_data[i] = temp_data
     
     # Go back to initial working directory
     os.chdir(old_cwd)

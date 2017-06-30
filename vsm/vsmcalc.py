@@ -94,6 +94,13 @@ def hysteresis_area(dataframe):
     
     return area
 
+def temperature_average(dataframe):
+    _, _, temperature = extract_columns(dataframe)
+    
+    temperature = temperature.mean()
+    
+    return temperature
+
 #directory = '/home/nikolaj/Dropbox/DTU/12. semester/Speciale/data/VSM/170509, Co-Al AX3, 17,5 mg, RT run (ProfileData)/'
 #data = vsmload.load_directory(directory, index_vals='last')[0]
 #print(data)
